@@ -123,6 +123,29 @@ class modunisender
         return $load;
     }
 
+    /**
+     * @return string
+     */
+    public static function getUserIp()
+    {
+        $ip = '127.0.0.1';
+
+        switch (true) {
+            case (isset($_SERVER['HTTP_CLIENT_IP']) AND $_SERVER['HTTP_CLIENT_IP'] != ''):
+                $ip = $_SERVER['HTTP_CLIENT_IP'];
+                break;
+            case (isset($_SERVER['HTTP_X_FORWARDED_FOR']) AND $_SERVER['HTTP_X_FORWARDED_FOR'] != ''):
+                $ip = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $ip = $ip[0];
+                break;
+            case (isset($_SERVER['REMOTE_ADDR']) AND $_SERVER['REMOTE_ADDR'] != ''):
+                $ip = $_SERVER['REMOTE_ADDR'];
+                break;
+        }
+
+        return $ip;
+    }
+
 
     /**
      * @param string $message
@@ -140,6 +163,58 @@ class modunisender
         }
     }
 
+    /**
+     * @param        $array
+     * @param string $delimiter
+     *
+     * @return array
+     */
+    public function explodeAndClean($array, $delimiter = ',')
+    {
+        $array = explode($delimiter, $array);     // Explode fields to array
+        $array = array_map('trim', $array);       // Trim array's values
+        $array = array_keys(array_flip($array));  // Remove duplicate fields
+        $array = array_filter($array);            // Remove empty values from array
+        return $array;
+    }
+
+    /**
+     * @param        $array
+     * @param string $delimiter
+     *
+     * @return array|string
+     */
+    public function cleanAndImplode($array, $delimiter = ',')
+    {
+        $array = array_map('trim', $array);       // Trim array's values
+        $array = array_keys(array_flip($array));  // Remove duplicate fields
+        $array = array_filter($array);            // Remove empty values from array
+        $array = implode($delimiter, $array);
+
+        return $array;
+    }
+
+    /**
+     * @param array  $array
+     * @param string $prefix
+     *
+     * @return array
+     */
+    public function flattenArray(array $array = array(), $prefix = '')
+    {
+        $outArray = array();
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $outArray = $outArray + $this->flattenArray($value, $prefix . $key . '.');
+            } else {
+                $outArray[$prefix . $key] = $value;
+            }
+        }
+
+        return $outArray;
+    }
+
+
     public function uniSenderGetLists(array $params = array())
     {
         $mode = '/getLists/';
@@ -148,7 +223,155 @@ class modunisender
 
         return $data;
     }
-    
+
+    public function uniSenderCreateList(array $params = array())
+    {
+        $mode = '/createList/';
+        $params = array_merge(array(
+            'title'                => null,
+            'before_subscribe_url' => null,
+            'after_subscribe_url'  => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderDeleteList(array $params = array())
+    {
+        $mode = '/deleteList/';
+        $params = array_merge(array(
+            'list_id' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderUpdateList(array $params = array())
+    {
+        $mode = '/updateList/';
+        $params = array_merge(array(
+            'list_id'              => null,
+            'title'                => null,
+            'before_subscribe_url' => null,
+            'after_subscribe_url'  => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderSubscribe(array $params = array())
+    {
+        $mode = '/subscribe/';
+        $params = array_merge(array(
+            'list_ids'     => null,
+            'fields'       => null,
+            'tags'         => null,
+            'request_ip'   => $this->getUserIp(),
+            'request_time' => null,
+            'double_optin' => 3,
+            'confirm_ip'   => null,
+            'confirm_time' => null,
+            'overwrite'    => 2,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderUnSubscribe(array $params = array())
+    {
+        $mode = '/unsubscribe/';
+        $params = array_merge(array(
+            'contact_type' => 'email',
+            'contact'      => null,
+            'list_ids'     => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderExclude(array $params = array())
+    {
+        $mode = '/exclude/';
+        $params = array_merge(array(
+            'contact_type' => 'email',
+            'contact'      => null,
+            'list_ids'     => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderGetFields(array $params = array())
+    {
+        $mode = '/getFields/';
+        $params = array_merge(array(), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderCreateField(array $params = array())
+    {
+        $mode = '/createField/';
+        $params = array_merge(array(
+            'name'        => null,
+            'public_name' => null,
+            'type'        => 'string',
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderUpdateField(array $params = array())
+    {
+        $mode = '/updateField/';
+        $params = array_merge(array(
+            'id'   => null,
+            'name' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderDeleteField(array $params = array())
+    {
+        $mode = '/deleteField/';
+        $params = array_merge(array(
+            'id' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderGetTags(array $params = array())
+    {
+        $mode = '/getTags/';
+        $params = array_merge(array(), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderDeleteTag(array $params = array())
+    {
+        $mode = '/deleteTag/';
+        $params = array_merge(array(
+            'id' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
 
     /**
      * @param string $mode
