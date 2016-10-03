@@ -2,15 +2,37 @@
 
 $plugins = array();
 
-$tmp = array(/*
-	'modunisender' => array(
-		'file' => 'modunisender',
-		'description' => '',
-		'events' => array(
-			'OnManagerPageInit' => array()
-		)
-	)
-	*/
+$tmp = array(
+
+    'modUniSenderUserCreate'   => array(
+        'file'        => 'user.create',
+        'description' => '',
+        'events'      => array(
+            'OnUserSave' => array(
+                'priority' => 150
+            ),
+        )
+    ),
+    'modUniSenderUserPayOrder' => array(
+        'file'        => 'user.pay.order',
+        'description' => '',
+        'events'      => array(
+            'msOnChangeOrderStatus' => array(
+                'priority' => 150
+            ),
+        ),
+        'disabled'    => 1
+    ),
+    'modUniSenderCustom'       => array(
+        'file'        => 'custom',
+        'description' => '',
+        'events'      => array(
+            'msOnChangeOrderStatus' => array(
+                'priority' => 150
+            ),
+        ),
+        'disabled'    => 1
+    )
 );
 
 foreach ($tmp as $k => $v) {
@@ -23,7 +45,8 @@ foreach ($tmp as $k => $v) {
         'plugincode'  => getSnippetContent($sources['source_core'] . '/elements/plugins/plugin.' . $v['file'] . '.php'),
         'static'      => BUILD_PLUGIN_STATIC,
         'source'      => 1,
-        'static_file' => 'core/components/' . PKG_NAME_LOWER . '/elements/plugins/plugin.' . $v['file'] . '.php'
+        'static_file' => 'core/components/' . PKG_NAME_LOWER . '/elements/plugins/plugin.' . $v['file'] . '.php',
+        'disabled'    => isset($v['disabled']) ? $v['disabled'] : 0
     ), '', true, true);
 
     $events = array();

@@ -372,6 +372,26 @@ class modunisender
         return $data;
     }
 
+    public function uniSenderGetListIdFromName($name = '', $create = false)
+    {
+        $id = null;
+
+        $lists = $this->uniSenderGetLists();
+        foreach ($lists as $list) {
+            if (mb_strtolower($name, 'utf-8') == mb_strtolower($list['title'], 'utf-8')) {
+                $id = $list['id'];
+                break;
+            }
+        }
+
+        if (!$id AND $create) {
+            $response = $this->uniSenderCreateList(array('title' => $name));
+            $id = $this->getOption('id', $response);
+        }
+
+        return $id;
+    }
+
 
     /**
      * @param string $mode
@@ -451,6 +471,10 @@ class modunisender
             $data = array();
         } else {
             $data = json_decode($data, true);
+            if (isset($data['error'])) {
+                $this->modx->log(1, print_r($data['error'], 1));
+            }
+            $data = isset($data['result']) ? $data['result'] : $data;
         }
         $this->log('', $data);
 
