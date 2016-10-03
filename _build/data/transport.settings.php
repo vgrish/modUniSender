@@ -4,28 +4,24 @@ $settings = array();
 
 $tmp = array(
 
-    'api_url'       => array(
-        'value' => 'https://api.sendpulse.com',
+    'api_url'  => array(
+        'value' => 'https://api.unisender.com',
         'xtype' => 'textfield',
         'area'  => 'modunisender_main',
     ),
-    'client_id'     => array(
-        'value' => '',
-        'xtype' => 'textfield',
-        'area'  => 'modunisender_main',
-    ),
-    'client_secret' => array(
+    'api_key'  => array(
         'value' => '',
         'xtype' => 'textfield',
         'area'  => 'modunisender_main',
     ),
 
-    'addressbook_user_create' => array(
+
+    'addressbook_user_create'    => array(
         'value' => '538999',
         'xtype' => 'textfield',
         'area'  => 'modunisender_addressbooks',
     ),
-    'addressbook_user_pay_order'      => array(
+    'addressbook_user_pay_order' => array(
         'value' => '',
         'xtype' => 'textfield',
         'area'  => 'modunisender_addressbooks',
@@ -47,7 +43,7 @@ $tmp = array(
          'xtype' => 'textfield',
          'area'  => 'modunisender_temp',
      )*/
-    
+
     /*
 	'some_setting' => array(
 		'xtype' => 'combo-boolean',
