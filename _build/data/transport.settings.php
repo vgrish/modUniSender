@@ -17,7 +17,7 @@ $tmp = array(
 
 
     'addressbook_user_create'    => array(
-        'value' => '7522854',
+        'value' => '',
         'xtype' => 'textfield',
         'area'  => 'modunisender_addressbooks',
     ),
