@@ -1,13 +1,10 @@
 Changelog for modunisender.
 
-1.0.0-beta
+1.0.1-beta - (04.10.2016)
 ==============
-- Opimized for MODX 2.3
-- Improved processors
-- Disabled plugin and system settings
-- Improved UI
-- Added grid actions
-- Added icons in menu
-- Added search in grid
-- Grid sorting
-- Enable and disable actions
+- Fix "custom plugin"
+- Add "adrbook_sendpulse" TV to "custom plugin"
+
+1.0.0-beta - (03.10.2016)
+==============
+- Initial

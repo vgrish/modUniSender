@@ -44,6 +44,21 @@ switch ($modx->event->name) {
             }
 
             $name = $product->get('pagetitle');
+
+            $q = $modx->newQuery('modTemplateVar');
+            $q->leftJoin('modTemplateVarResource', 'modTemplateVarResource',
+                'modTemplateVarResource.tmplvarid = modTemplateVar.id');
+            $q->where(array(
+                'modTemplateVar.name'              => 'adrbook_sendpulse',
+                'modTemplateVarResource.contentid' => $product->get('id')
+            ));
+            $q->select('modTemplateVarResource.value');
+            if ($q->prepare() AND $q->stmt->execute()) {
+                if (!$name = $modx->getValue($q->stmt)) {
+                    $name = $product->get('pagetitle');
+                }
+            }
+
             $book = $modunisender->uniSenderGetListIdFromName($name, true);
 
             switch (true) {
@@ -55,9 +70,9 @@ switch ($modx->event->name) {
                     ));
                     break;
                 case $book AND $status == 4:
-                    $modunisender->uniSenderSubscribe(array(
+                    $modunisender->uniSenderExclude(array(
                         'list_ids' => $book,
-                        'fields'   => $fields
+                        'contact'  => $profile->get('email')
                     ));
                     break;
                 default:
