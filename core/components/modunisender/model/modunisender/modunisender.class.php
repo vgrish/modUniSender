@@ -372,6 +372,51 @@ class modunisender
         return $data;
     }
 
+    public function uniSenderImportContacts(array $params = array())
+    {
+        $mode = '/importContacts/';
+        $params = array_merge(array(
+            'field_names'     => null,
+            'data'            => null,
+            'overwrite_tags'  => 0,
+            'overwrite_lists' => 0,
+            'force_import'    => 0,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderExportContacts(array $params = array())
+    {
+        $mode = '/exportContacts/';
+        $params = array_merge(array(
+            'list_id'      => null,
+            'field_names'  => null,
+            'offset'       => 0,
+            'limit'        => 1000,
+            'tag'          => null,
+            'email'        => null,
+            'email_status' => null,
+            'phone'        => null,
+            'phone_status' => null,
+        ), $params);
+        $data = $this->request($mode, $params, 'POST');
+
+        return $data;
+    }
+
+    public function uniSenderGetListsIds()
+    {
+        $ids = array();
+        $lists = $this->uniSenderGetLists();
+        foreach ($lists as $list) {
+            $ids[] = $list['id'];
+        }
+
+        return $ids;
+    }
+
     public function uniSenderGetListIdFromName($name = '', $create = false)
     {
         $id = null;

@@ -64,12 +64,22 @@ switch ($modx->event->name) {
             switch (true) {
                 case $book AND $status == 1 AND $order->get('cost') == 0:
                 case $book AND $status == 2:
+
+                    /* delete from all list */
+                    $books = $modunisender->cleanAndImplode($modunisender->uniSenderGetListsIds());
+                    $modunisender->uniSenderImportContacts(array(
+                        'field_names' => array('email', 'email_list_ids', 'delete'),
+                        'data'        => array(array($profile->get('email'), $books, 1)),
+                    ));
+
+                    /* Subscribe */
                     $modunisender->uniSenderSubscribe(array(
                         'list_ids' => $book,
                         'fields'   => $fields
                     ));
                     break;
                 case $book AND $status == 4:
+                    /* Exclude */
                     $modunisender->uniSenderExclude(array(
                         'list_ids' => $book,
                         'contact'  => $profile->get('email')
