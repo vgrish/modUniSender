@@ -35,6 +35,29 @@ switch ($modx->event->name) {
             'username' => $user->get('username'),
         );
 
+        /* get all list */
+        $response = $modunisender->uniSenderExportContacts(array(
+            'field_names' => array('email_list_ids'),
+            'email'       => $profile->get('email')
+        ));
+        $addBooks = !empty($response['data']) ? $response['data']['0'] : array();
+        $excludeBooks = array();
+
+        /* delete from all list */
+        $modunisender->uniSenderImportContacts(array(
+            'field_names' => array(
+                'email',
+                'email_list_ids',
+                'delete'
+            ),
+            'data'        => array(
+                array(
+                    $profile->get('email'),
+                    $modunisender->cleanAndImplode($addBooks),
+                    1
+                )
+            ),
+        ));
 
         /** @var msOrderProduct $item */
         foreach ($items as $item) {
@@ -64,31 +87,32 @@ switch ($modx->event->name) {
             switch (true) {
                 case $book AND $status == 1 AND $order->get('cost') == 0:
                 case $book AND $status == 2:
-
-                    /* delete from all list */
-                    $books = $modunisender->cleanAndImplode($modunisender->uniSenderGetListsIds());
-                    $modunisender->uniSenderImportContacts(array(
-                        'field_names' => array('email', 'email_list_ids', 'delete'),
-                        'data'        => array(array($profile->get('email'), $books, 1)),
-                    ));
-
-                    /* Subscribe */
-                    $modunisender->uniSenderSubscribe(array(
-                        'list_ids' => $book,
-                        'fields'   => $fields
-                    ));
+                    $addBooks[] = $book;
                     break;
                 case $book AND $status == 4:
-                    /* Exclude */
-                    $modunisender->uniSenderExclude(array(
-                        'list_ids' => $book,
-                        'contact'  => $profile->get('email')
-                    ));
+                    //$excludeBooks[] = $book;
                     break;
                 default:
                     break;
             }
         }
+
+        if (!empty($excludeBooks)) {
+            /* Exclude */
+            $modunisender->uniSenderExclude(array(
+                'list_ids' => $modunisender->cleanAndImplode($excludeBooks),
+                'contact'  => $profile->get('email')
+            ));
+        }
+
+        if (!empty($addBooks)) {
+            /* Subscribe */
+            $modunisender->uniSenderSubscribe(array(
+                'list_ids' => $modunisender->cleanAndImplode($addBooks),
+                'fields'   => $fields
+            ));
+        }
+
 
         if ($modx->context->key == 'mgr' AND !empty($modx->event->_output)) {
             $response = array(

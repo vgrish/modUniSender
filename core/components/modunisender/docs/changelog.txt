@@ -1,5 +1,9 @@
 Changelog for modunisender.
 
+1.0.3-beta - (10.10.2016)
+==============
+- Change "custom plugin"
+
 1.0.2-beta - (05.10.2016)
 ==============
 - Add "uniSenderImportContacts", "uniSenderExportContacts"
