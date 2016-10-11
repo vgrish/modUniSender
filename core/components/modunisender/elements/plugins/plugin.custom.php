@@ -35,7 +35,7 @@ switch ($modx->event->name) {
             'name'  => $user->get('username'),
         );
 
-        /* get all list */
+        /* get all list for email */
         $response = $modunisender->uniSenderExportContacts(array(
             'field_names' => array('email_list_ids'),
             'email'       => $profile->get('email')
@@ -43,7 +43,7 @@ switch ($modx->event->name) {
         $addBooks = !empty($response['data']) ? $response['data']['0'] : array();
         $excludeBooks = array();
 
-        /* delete from all list */
+        /* delete email from all list */
         $modunisender->uniSenderImportContacts(array(
             'field_names' => array(
                 'email',
@@ -58,6 +58,31 @@ switch ($modx->event->name) {
                 )
             ),
         ));
+
+        /* get all list for phone */
+        $response = $modunisender->uniSenderExportContacts(array(
+            'field_names' => array('phone_list_ids'),
+            'phone'       => $profile->get('phone')
+        ));
+        $addBooks = !empty($response['data']) ? array_merge($addBooks, $response['data']['0']) : $addBooks;
+        $excludeBooks = array();
+
+        /* delete phone from all list */
+        $modunisender->uniSenderImportContacts(array(
+            'field_names' => array(
+                'phone',
+                'phone_list_ids',
+                'delete'
+            ),
+            'data'        => array(
+                array(
+                    $profile->get('phone'),
+                    $modunisender->cleanAndImplode($addBooks),
+                    1
+                )
+            ),
+        ));
+
 
         /** @var msOrderProduct $item */
         foreach ($items as $item) {
