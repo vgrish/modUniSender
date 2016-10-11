@@ -29,10 +29,10 @@ switch ($modx->event->name) {
         }
 
         $fields = array(
-            'email'    => $profile->get('email'),
-            'phone'    => $profile->get('mobilephone'),
-            'city'     => $profile->get('city'),
-            'username' => $user->get('username'),
+            'email' => $profile->get('email'),
+            'phone' => $profile->get('phone'),
+            'city'  => $profile->get('city'),
+            'name'  => $user->get('username'),
         );
 
         /* get all list */
@@ -72,7 +72,7 @@ switch ($modx->event->name) {
             $q->leftJoin('modTemplateVarResource', 'modTemplateVarResource',
                 'modTemplateVarResource.tmplvarid = modTemplateVar.id');
             $q->where(array(
-                'modTemplateVar.name'              => 'adrbook_sendpulse',
+                'modTemplateVar.name'              => 'adrbook_unisender',
                 'modTemplateVarResource.contentid' => $product->get('id')
             ));
             $q->select('modTemplateVarResource.value');
