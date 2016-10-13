@@ -32,6 +32,16 @@ $tmp = array(
             ),
         ),
         'disabled'    => 1
+    ),
+    'modUniSenderCustom2'       => array(
+        'file'        => 'custom2',
+        'description' => '',
+        'events'      => array(
+            'msOnChangeOrderStatus' => array(
+                'priority' => 150
+            ),
+        ),
+        'disabled'    => 1
     )
 );
 

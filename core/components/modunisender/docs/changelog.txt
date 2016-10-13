@@ -1,5 +1,9 @@
 Changelog for modunisender.
 
+1.0.5-beta - (13.10.2016)
+==============
+- Add "custom2 plugin"
+
 1.0.4-beta - (11.10.2016)
 ==============
 - Change "custom plugin"
