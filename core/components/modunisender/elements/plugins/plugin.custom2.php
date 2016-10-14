@@ -35,19 +35,27 @@ switch ($modx->event->name) {
             'name'  => $user->get('username'),
         );
 
-        /* delete phone from all list */
-        $modunisender->uniSenderImportContacts(array(
-            'field_names' => array(
-                'phone',
-                'delete'
-            ),
-            'data'        => array(
-                array(
-                    $profile->get('phone'),
-                    1
-                )
-            ),
+        /* get phone by email */
+        $response = $modunisender->uniSenderExportContacts(array(
+            'field_names' => array('phone'),
+            'email'       => $profile->get('email')
         ));
+        $phone = !empty($response['data']) ? $response['data'][0][0] : '';
+        if (!empty($phone)) {
+            /* delete old phone from all list */
+            $modunisender->uniSenderImportContacts(array(
+                'field_names' => array(
+                    'phone',
+                    'delete'
+                ),
+                'data'        => array(
+                    array(
+                        $phone,
+                        1
+                    )
+                ),
+            ));
+        }
 
         /* update email && phone on "user_create" list */
         $modunisender->uniSenderImportContacts(array(
