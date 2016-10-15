@@ -35,6 +35,46 @@ switch ($modx->event->name) {
             'name'  => $user->get('username'),
         );
 
+        /* get phone by email */
+        $response = $modunisender->uniSenderExportContacts(array(
+            'field_names' => array('phone'),
+            'email'       => $profile->get('email')
+        ));
+        $phone = !empty($response['data']) ? $response['data'][0][0] : '';
+        if (!empty($phone)) {
+            /* delete old phone from all list */
+            $modunisender->uniSenderImportContacts(array(
+                'field_names' => array(
+                    'phone',
+                    'delete'
+                ),
+                'data'        => array(
+                    array(
+                        $phone,
+                        1
+                    )
+                ),
+            ));
+        }
+
+        /* update email && phone on "user_create" list */
+        $modunisender->uniSenderImportContacts(array(
+            'field_names' => array(
+                'email',
+                'phone',
+                'email_list_ids',
+                'phone_list_ids',
+            ),
+            'data'        => array(
+                array(
+                    $profile->get('email'),
+                    $profile->get('phone'),
+                    $modunisender->getOption('addressbook_user_create', null),
+                    $modunisender->getOption('addressbook_user_create', null),
+                )
+            ),
+        ));
+
         /* get all list for email */
         $response = $modunisender->uniSenderExportContacts(array(
             'field_names' => array('email_list_ids'),
@@ -42,46 +82,6 @@ switch ($modx->event->name) {
         ));
         $addBooks = !empty($response['data']) ? $response['data']['0'] : array();
         $excludeBooks = array();
-
-        /* delete email from all list */
-        $modunisender->uniSenderImportContacts(array(
-            'field_names' => array(
-                'email',
-                'email_list_ids',
-                'delete'
-            ),
-            'data'        => array(
-                array(
-                    $profile->get('email'),
-                    $modunisender->cleanAndImplode($addBooks),
-                    1
-                )
-            ),
-        ));
-
-        /* get all list for phone */
-        $response = $modunisender->uniSenderExportContacts(array(
-            'field_names' => array('phone_list_ids'),
-            'phone'       => $profile->get('phone')
-        ));
-        $addBooks = !empty($response['data']) ? array_merge($addBooks, $response['data']['0']) : $addBooks;
-        $excludeBooks = array();
-
-        /* delete phone from all list */
-        $modunisender->uniSenderImportContacts(array(
-            'field_names' => array(
-                'phone',
-                'phone_list_ids',
-                'delete'
-            ),
-            'data'        => array(
-                array(
-                    $profile->get('phone'),
-                    $modunisender->cleanAndImplode($addBooks),
-                    1
-                )
-            ),
-        ));
 
 
         /** @var msOrderProduct $item */
@@ -115,7 +115,7 @@ switch ($modx->event->name) {
                     $addBooks[] = $book;
                     break;
                 case $book AND $status == 4:
-                    //$excludeBooks[] = $book;
+                    $excludeBooks[] = $book;
                     break;
                 default:
                     break;
@@ -137,7 +137,6 @@ switch ($modx->event->name) {
                 'fields'   => $fields
             ));
         }
-
 
         if ($modx->context->key == 'mgr' AND !empty($modx->event->_output)) {
             $response = array(
